@@ -3,7 +3,6 @@ import logging
 import os
 from github import Github
 from github import enable_console_debug_logging
-import github
 from dotenv import load_dotenv
 
 
