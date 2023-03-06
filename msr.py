@@ -42,6 +42,10 @@ def main():
     except Exception as e:
         logging.critical("Error returning repository: %s", e)
 
+    # TODO Define each category of data as its own .py file. Should provide a function that takes the repo object and returns a pandas dataframe
+
+    # TODO Export datframes into excel or sheets
+
 
 if __name__ == '__main__':
     main()
