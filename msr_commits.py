@@ -1,46 +1,53 @@
 import logging
-from github import Github
-from github import enable_console_debug_logging
-import requests
+from github import RateLimitExceededException
+from datetime import datetime
 import pandas as pd
 
 # NOTES
-# May want to populate the data frame directly for efficiency and skip the JSON style format.
-# Need to refactor and find a way to get date that doesn't hit the rate limit. Doesn't seem easy with the current API client or making one request per commit.
-# Already slow as is with the API client to retrieve the 30k commits. Worried about rate limit for additional portions.
+# Returning full commit history requries around 1000 request. May want to build in some checking for rate limits and ways to manage that. 
 
-# This is the public function to be called from the main file.
+def get_commits(repo, lookback_date=datetime(2000,1,1,0,0), save=True):
+    """This is the public function used to get commits for the given repo.
 
+    Args:
+        repo (github.Repository.Repository): The repository to get the commits from
+        lookback_date (datetime.datetime, optional): Lookback date and time to gather commits. Defaults to Jan 1, 2000.
+        save (bool, optional): Whether or not the output should be saved to a csv file. Defaults to True.
 
-def get_commits(repo, max=-1):
-    commit_list = generate_commit_list(repo, max)
-    df = pd.json_normalize(commit_list)
-    df.to_csv("./commit-data.csv")  # Move this to main function?
-    return df
-
-
-def generate_commit_list(repo, max=-1):
-    commits = repo.get_commits()
-    logging.info("Getting %d commits", commits.totalCount)
-
+    Returns:
+        pandas.DataFrame: Pandas dataframe containing all of the data gathered.
+    """
+    commits = repo.get_commits(since=lookback_date)
+    logging.info("Getting %d commits since %s", commits.totalCount, lookback_date)
     commit_list = []
     for commit in commits:
         try:
-            # TODO find better way to get dates to avoid rate limits
-            # resp = requests.get(commits[0].url)
-            # date = resp.json()["commit"]["committer"]["date"]
             commit_list.append(
                 {"commit_ID": commit.sha,
-                 #  "commit_date": date,
+                 "commit_date": commit.commit.author.date,
                  "commit_url": commit.html_url
-                 }
-            )
+                 })
+        except RateLimitExceededException as rate:
+            logging.critical('RATE LIMIT EXCEEDED at Commit %d\n Last Commit Date: %s\n%s', len(commit_list), commit_list[0].commit_date, rate)
         except Exception as e:
-            logging.critical(e)
-            # logging.critical(resp)
+            logging.error('%s\nException while adding commit URL: %s', e, commit.url)
+    
+    return convert_df(commit_list, repo.name, save)
 
-        # optional max commits to improve performance
-        if len(commit_list) >= max and max != -1:
-            return commit_list
 
-    return commit_list
+def convert_df(list, repo_name, save):
+    """Private function that converts data to dataframe and saves if indicated.
+
+    Args:
+        list (dict): The dictrionary of data gathered that is being saved.
+        repo_name (string): The string that will will prefix the file
+        save (bool): whether or not the data should be saved to a csv or just converted to df.
+
+    Returns:
+        pandas.DataFrame: The input list of dicts converted to a DataFrame.
+    """
+    df = pd.DataFrame(list)
+    file_name = './{name}_commit_data.csv'.format(name = repo_name)
+    if save:
+        df.to_csv(file_name)
+    return df

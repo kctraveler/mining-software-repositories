@@ -5,6 +5,7 @@ from github import Github
 from github import enable_console_debug_logging
 from dotenv import load_dotenv
 from msr_commits import get_commits
+from datetime import datetime
 
 
 def main():
@@ -42,11 +43,12 @@ def main():
     except Exception as e:
         logging.critical("Error returning repository: %s", e)
 
-    # TODO Define each category of data as its own .py file. Should provide a function that takes the repo object and returns a pandas dataframe
-    # EXAMPLE get_issues(repo) would be a function called from a seperate file that returns all the attributes of the issues in a dataframe.
-    logging.debug(get_commits(repo))
-    # TODO Export datframes into excel or sheets
-    # Figure out if there is a way to aggregate data into multiple tabs
+    # WARNING Running commits without a date range filter will take up nearly 1000 of your API calls. Adding datetime constraing during development to avoid isues.
+    commits = get_commits(repo, lookback_date=datetime(2023,3,1,0,0)) 
+    logging.info("Finished Gathering Commits")
+    logging.debug(commits)
+    
+    # TODO Determine if there is a better way to manage the data coming fromm multiple sources. Potentially look at matplot lib for making visualizations. 
 
 
 if __name__ == '__main__':
