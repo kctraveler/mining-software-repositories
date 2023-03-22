@@ -14,7 +14,7 @@
 ## Links to documentation for libraries used in this project
 
 - [PyGithub Documenation](https://pygithub.readthedocs.io/en/latest/index.html)
-- [pyton-dotenv Documentation](https://pypi.org/project/python-dotenv/)
+- [python-dotenv Documentation](https://pypi.org/project/python-dotenv/)
 - [argparse Documenation](https://docs.python.org/3/library/argparse.html#add-help)
 - [logging Documentation](https://docs.python.org/3/library/logging.html)
 

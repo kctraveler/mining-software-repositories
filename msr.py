@@ -42,8 +42,10 @@ def main():
         logging.critical("Error returning repository: %s", e)
 
     # TODO Define each category of data as its own .py file. Should provide a function that takes the repo object and returns a pandas dataframe
+    # EXAMPLE get_issues(repo) would be a function called from a seperate file that returns all the attributes of the issues in a dataframe.
 
     # TODO Export datframes into excel or sheets
+    # Figure out if there is a way to aggregate data into multiple tabs
 
 
 if __name__ == '__main__':
