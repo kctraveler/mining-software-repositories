@@ -33,7 +33,7 @@ def main():
     # Establish API connection and get Repo
     try:
         load_dotenv()
-        gh = Github(os.environ['GITHUB_TOKEN'])
+        gh = Github(os.environ['GITHUB_TOKEN'], per_page=100)
         repo = gh.get_repo(args.repo)
         logging.info(
             "API connection established and repo returned with ID %d", repo.id)
@@ -43,7 +43,7 @@ def main():
     except Exception as e:
         logging.critical("Error returning repository: %s", e)
 
-    # WARNING Running commits without a date range filter will take up nearly 1000 of your API calls. Adding datetime constraing during development to avoid isues.
+    # WARNING limiting on date range during testing to reduce request count and speed up runs
     commits = get_commits(repo, lookback_date=datetime(2023,3,1,0,0)) 
     logging.info("Finished Gathering Commits")
     logging.debug(commits)
