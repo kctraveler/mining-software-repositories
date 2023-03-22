@@ -4,6 +4,7 @@ import os
 from github import Github
 from github import enable_console_debug_logging
 from dotenv import load_dotenv
+from msr_commits import get_commits
 
 
 def main():
@@ -43,10 +44,11 @@ def main():
 
     # TODO Define each category of data as its own .py file. Should provide a function that takes the repo object and returns a pandas dataframe
     # EXAMPLE get_issues(repo) would be a function called from a seperate file that returns all the attributes of the issues in a dataframe.
-
+    print(get_commits(repo, 10))
     # TODO Export datframes into excel or sheets
     # Figure out if there is a way to aggregate data into multiple tabs
 
 
 if __name__ == '__main__':
     main()
+
