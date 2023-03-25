@@ -5,6 +5,7 @@ from github import Github
 from github import enable_console_debug_logging
 from dotenv import load_dotenv
 from msr_commits import get_commits
+from msr_code_size import get_code_size
 from datetime import datetime
 
 
@@ -44,12 +45,13 @@ def main():
         logging.critical("Error returning repository: %s", e)
 
     # WARNING limiting on date range during testing to reduce request count and speed up runs
-    commits = get_commits(repo, lookback_date=datetime(2023,3,1,0,0)) 
+    commits = get_commits(repo, lookback_date=datetime(2023,3,21,0,0)) 
     logging.info("Finished Gathering Commits")
     logging.debug(commits)
-    
+    print(repo.trees_url)
+    for i in range(commits.shape[0]):
+        print(get_code_size(repo.get_commit(commits.loc[i, "commit_ID"])))
     # TODO Determine if there is a better way to manage the data coming fromm multiple sources. Potentially look at matplot lib for making visualizations. 
-
 
 if __name__ == '__main__':
     main()
