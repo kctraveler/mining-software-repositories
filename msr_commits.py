@@ -3,6 +3,8 @@ from github import RateLimitExceededException
 from datetime import datetime
 import pandas as pd
 from msr_code_size import get_code_size
+from matplotlib import pyplot as plt
+from matplotlib import pyplot as figure
 
 # NOTES
 # Returning full commit history requries around 1000 request. May want to build in some checking for rate limits and ways to manage that. 
@@ -53,6 +55,21 @@ def convert_df(list, repo_name, save):
     """
     df = pd.DataFrame(list)
     file_name = './{name}_commit_data.csv'.format(name = repo_name)
-    if save:
-        df.to_csv(file_name)
+    print(df)
+
+
+    
+    # if save:
+    #     df.to_csv(file_name)
+
+    plt.scatter(df.commit_date, df.commit_ID, alpha=0.25)
+    #[plt.text(x=['commit_date'], y=['commit_ID'], s=['commit_url'])]
+
+    plt.xlabel('Commit Date Timeline')
+    plt.ylabel('Commit ID')
+    plt.title('Commit Timeline')
+    plt.show()    
     return df
+
+    
+
