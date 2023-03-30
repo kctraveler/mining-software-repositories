@@ -2,13 +2,14 @@ import logging
 from github import RateLimitExceededException
 from datetime import datetime
 import pandas as pd
+from msr_code_size import get_code_size
 from matplotlib import pyplot as plt
 from matplotlib import pyplot as figure
 
 # NOTES
 # Returning full commit history requries around 1000 request. May want to build in some checking for rate limits and ways to manage that. 
 
-def get_commits(repo, lookback_date=datetime(2000,1,1,0,0), save=True):
+def get_commits(repo, lookback_date=datetime(2000,1,1,0,0), save=True, code_size_step_value=20):
     """This is the public function used to get commits for the given repo.
 
     Args:
@@ -27,8 +28,12 @@ def get_commits(repo, lookback_date=datetime(2000,1,1,0,0), save=True):
             commit_list.append(
                 {"commit_ID": commit.sha,
                  "commit_date": commit.commit.author.date,
-                 "commit_url": commit.html_url
+                 "commit_url": commit.html_url,
+                 "code_size": None
                  })
+            if len(commit_list) % code_size_step_value == 0:
+                commit_list[-1]["code_size"] = get_code_size(commit)
+
         except RateLimitExceededException as rate:
             logging.critical('RATE LIMIT EXCEEDED at Commit %d\n Last Commit Date: %s\n%s', len(commit_list), commit_list[0].commit_date, rate)
         except Exception as e:
