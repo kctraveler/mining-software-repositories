@@ -49,7 +49,7 @@ def convert_df(list, repo_name, save):
         pandas.DataFrame: The input list of dicts converted to a DataFrame.
     """
     df = pd.DataFrame(list)
-    file_name = './{name}_commit_data.csv'.format(name = repo_name)
+    file_name = './{name}_commit.csv'.format(name = repo_name)
     print(df)
 
 
