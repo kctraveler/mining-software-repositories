@@ -18,9 +18,11 @@ def get_commits(repo, lookback_date: datetime, cache=True, code_size_step_value=
     Returns:
         pandas.DataFrame: Pandas dataframe containing all of the data gathered.
     """
-    logging.info(cache)
-    data, lookback_date = utils.load_cache(
-        repo.name, "commit", lookback_date, "commit_date")
+    if cache:
+        data, lookback_date = utils.load_cache(
+            repo.name, "commit", lookback_date, "commit_date")
+    else:
+        data = pd.DataFrame()
     commits = repo.get_commits(since=lookback_date)
     logging.info("Getting %d commits since %s",
                  commits.totalCount, lookback_date)

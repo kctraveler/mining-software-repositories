@@ -9,8 +9,11 @@ import matplotlib.dates as mdates
 
 
 def get_issues(repo, lookback_date, cache=True):
-    data, lookback_date = utils.load_cache(
-        repo.name, "issue", lookback_date, "last_update")
+    if cache:
+        data, lookback_date = utils.load_cache(
+            repo.name, "issue", lookback_date, "last_update")
+    else:
+        data = pd.DataFrame()
     issues = repo.get_issues(since=lookback_date)
     logging.info("getting %d issues since %s",
                  issues.totalCount, lookback_date)
