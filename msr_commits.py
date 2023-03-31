@@ -1,11 +1,10 @@
-import logging
-from github import RateLimitExceededException
-from datetime import datetime
-import pandas as pd
 from msr_code_size import get_code_size
-from matplotlib import pyplot as plt
-from matplotlib import pyplot as figure
+import pandas as pd
+from datetime import datetime
+from github import RateLimitExceededException
+import logging
 import utils
+from matplotlib import pyplot as plt
 
 
 def get_commits(repo, lookback_date: datetime, cache=True, code_size_step_value=20):
@@ -19,6 +18,7 @@ def get_commits(repo, lookback_date: datetime, cache=True, code_size_step_value=
     Returns:
         pandas.DataFrame: Pandas dataframe containing all of the data gathered.
     """
+    logging.info(cache)
     data, lookback_date = utils.load_cache(
         repo.name, "commit", lookback_date, "commit_date")
     commits = repo.get_commits(since=lookback_date)
@@ -39,12 +39,10 @@ def get_commits(repo, lookback_date: datetime, cache=True, code_size_step_value=
         except RateLimitExceededException as rate:
             logging.critical('RATE LIMIT EXCEEDED at Commit %d\n Last Commit Date: %s\n%s', len(
                 commit_list), commit_list[0].commit_date, rate)
-        except Exception as e:
-            logging.error(
-                '%s\nException while adding commit URL: %s', e, commit.url)
 
     new_data = utils.convert_df(commit_list, "commit")
     if not data.empty:
+        logging.info('data not empty')
         pd.concat([data, new_data])
     else:
         data = new_data
@@ -54,6 +52,7 @@ def get_commits(repo, lookback_date: datetime, cache=True, code_size_step_value=
 
 
 def analyze(commit_df):
+    plt.figure(figsize=(10, 5))
     plt.scatter(commit_df.commit_date, commit_df.commit_ID, alpha=0.25)
     # [plt.text(x=['commit_date'], y=['commit_ID'], s=['commit_url'])]
 

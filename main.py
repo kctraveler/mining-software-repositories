@@ -4,10 +4,9 @@ import os
 from github import Github
 from github import enable_console_debug_logging
 from dotenv import load_dotenv
-from msr_commits import get_commits
-from msr_code_size import get_code_size
 from datetime import datetime
-from datetime import date
+import msr_code_size
+import msr_commits
 import msr_issues
 
 
@@ -59,12 +58,13 @@ def main():
     except Exception as e:
         logging.critical("Error returning repository: %s", e)
 
-    # WARNING limiting on date range during testing to reduce request count and speed up runs
-    commits = get_commits(repo, lookback_date, ignore_cache)
-    logging.info("Finished Gathering Commits")
-    logging.debug(commits)
+    # Gather data
+    commits = msr_commits.get_commits(repo, lookback_date, ignore_cache)
+    issues = msr_issues.get_issues(repo, lookback_date, ignore_cache)
 
-    # TODO Determine if there is a better way to manage the data coming fromm multiple sources. Potentially look at matplot lib for making visualizations.
+    # Analyze data
+    msr_commits.analyze(commits)
+    msr_issues.analyze(issues)
 
 
 if __name__ == '__main__':
