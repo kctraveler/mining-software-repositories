@@ -2,52 +2,45 @@ import os
 import shutil
 import pandas as pd
 import logging
+from datetime import datetime
 
-CACHE_DIR = os.path.join(os.getcwd(), "/cache")
-
-
-def create_cache(repo_name, data_type, df: pd.DataFrame):
-    try:
-        repo_cache_dir = os.path.join(CACHE_DIR, "/", repo_name)
-        os.mkdir(repo_cache_dir)
-        return repo_cache_dir
-    except FileExistsError:
-        None
-    df.to_csv(os.path.join(repo_cache_dir, "/", data_type, ".csv"))
+CACHE_DIR = ("./cache")
 
 
-def load_cache(repo_name, data_type):
-    try:
-        cache_file_path = "%s/%s/%s.csv".format(
-            CACHE_DIR, repo_name, data_type)
-        data = pd.read_csv(cache_file_path, parse_dates=True)
-        return data
-    except OSError:
-        logging.error("Unable to load cache file")
-        return None
-
-
-def delete_cache(repo_name, data_type="ALL"):
-    try:
-        if (data_type == "ALL"):
-            cache_file_path = "%s/%s".format(CACHE_DIR, repo_name)
-            shutil.rmtree(cache_file_path)
-        else:
-            cache_file_path = "%s/%s/%s.csv".format(
-                CACHE_DIR, repo_name, data_type)
-            os.remove(cache_file_path)
-    except OSError:
-        logging.warn("Cache file could not be removed")
-
-
-def get_last_entry_dttm(pd_cache: pd.DataFrame, date_index=1):
-    pd_cache.sort_values(by=[date_index])
-    return pd_cache.max(axis=[1])
-
-
-def convert_df(list, repo_name, cache=True):
+def convert_df(list, data_type):
     df = pd.DataFrame(list)
-    if cache:
-        file_name = './{name}_commit.csv'.format(name=repo_name)
-        df.to_csv(file_name)
+    df.index.name = data_type
     return df
+
+
+def cache(df: pd.DataFrame, repo_name: str):
+    out_dir = os.path.join(CACHE_DIR, repo_name)
+    file_name = f'{df.index.name}.csv'
+    if not os.path.exists(CACHE_DIR):
+        logging.info(f"Creating directory {out_dir}")
+        os.mkdir(CACHE_DIR)
+        os.mkdir(out_dir)
+    elif not os.path.exists(out_dir):
+        os.mkdir(out_dir)
+    df.to_csv(os.path.join(out_dir, file_name))
+
+
+def load_cache(repo_name: str, data_type: str, lookback_date: datetime, since_key: str):
+    try:
+        logging.info(f"Loading cache for {data_type}")
+        cache_file = f'{CACHE_DIR}/{repo_name}/{data_type}.csv'
+        df = pd.read_csv(cache_file, index_col=data_type)
+        df[since_key] = pd.to_datetime(
+            df[since_key], infer_datetime_format=True)
+        if df[since_key].min() < lookback_date:
+            logging.info(
+                f'Cache data invalid for given lookback date, ignoring cache')
+            return (pd.DataFrame(), lookback_date)
+        else:
+            lookback_date = df[since_key].max().to_pydatetime()
+            logging.info(
+                f"Cache loaded. Setting lookback date to {lookback_date}")
+            return (df, lookback_date)
+    except FileNotFoundError:
+        logging.info(f"{cache_file} not found")
+        return (pd.DataFrame(), lookback_date)

@@ -29,6 +29,9 @@ def main():
                             d, '%Y-%m-%d'),
                         default="2023-03-01",
                         help="lookback date to analyze")
+    parser.add_argument('--ignoreCache',
+                        action='store_false',
+                        help="Ignore the cache and pull fresh data")
     args = parser.parse_args()
 
     # Setup logging
@@ -38,11 +41,15 @@ def main():
         enable_console_debug_logging()
         logging.debug("PyGithub logging enabled.")
 
+    # Save args
+    lookback_date = args.lookback
+    ignore_cache = args.ignoreCache
+    repo_name_full = args.repo
     # Establish API connection and get Repo
     try:
         load_dotenv()
         gh = Github(os.environ['GITHUB_TOKEN'], per_page=100)
-        repo = gh.get_repo(args.repo)
+        repo = gh.get_repo(repo_name_full)
         logging.info(
             "API connection established and repo returned with ID Rate limit: %s", repo.id)
         logging.info("Rate Limit Details: %s", gh.get_rate_limit().core)
@@ -53,7 +60,7 @@ def main():
         logging.critical("Error returning repository: %s", e)
 
     # WARNING limiting on date range during testing to reduce request count and speed up runs
-    commits = get_commits(repo, args.lookback)
+    commits = get_commits(repo, lookback_date, ignore_cache)
     logging.info("Finished Gathering Commits")
     logging.debug(commits)
 

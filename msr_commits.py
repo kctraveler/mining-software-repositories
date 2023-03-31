@@ -7,11 +7,8 @@ from matplotlib import pyplot as plt
 from matplotlib import pyplot as figure
 import utils
 
-# NOTES
-# Returning full commit history requries around 1000 request. May want to build in some checking for rate limits and ways to manage that.
 
-
-def get_commits(repo, lookback_date=datetime(2000, 1, 1, 0, 0), save=True, code_size_step_value=20):
+def get_commits(repo, lookback_date: datetime, cache=True, code_size_step_value=20):
     """This is the public function used to get commits for the given repo.
 
     Args:
@@ -22,6 +19,8 @@ def get_commits(repo, lookback_date=datetime(2000, 1, 1, 0, 0), save=True, code_
     Returns:
         pandas.DataFrame: Pandas dataframe containing all of the data gathered.
     """
+    data, lookback_date = utils.load_cache(
+        repo.name, "commit", lookback_date, "commit_date")
     commits = repo.get_commits(since=lookback_date)
     logging.info("Getting %d commits since %s",
                  commits.totalCount, lookback_date)
@@ -34,7 +33,7 @@ def get_commits(repo, lookback_date=datetime(2000, 1, 1, 0, 0), save=True, code_
                  "commit_url": commit.html_url,
                  "code_size": None
                  })
-            if len(commit_list) % code_size_step_value == 0:
+            if len(commit_list) % code_size_step_value == 0 or len(commit_list) == 1:
                 commit_list[-1]["code_size"] = get_code_size(commit)
 
         except RateLimitExceededException as rate:
@@ -44,30 +43,18 @@ def get_commits(repo, lookback_date=datetime(2000, 1, 1, 0, 0), save=True, code_
             logging.error(
                 '%s\nException while adding commit URL: %s', e, commit.url)
 
-    return convert_df(commit_list, repo.name, save)
-
-
-def convert_df(list, repo_name, cache=True):
-    """Private function that converts data to dataframe and saves if indicated.
-
-    Args:
-        list (dict): The dictrionary of data gathered that is being saved.
-        repo_name (string): The string that will will prefix the file
-        save (bool): whether or not the data should be saved to a csv or just converted to df.
-
-    Returns:
-        pandas.DataFrame: The input list of dicts converted to a DataFrame.
-    """
-    df = pd.DataFrame(list)
-    file_name = './{name}_commit.csv'.format(name=repo_name)
+    new_data = utils.convert_df(commit_list, "commit")
+    if not data.empty:
+        pd.concat([data, new_data])
+    else:
+        data = new_data
     if cache:
-       # utils.create_cache(repo_name, "commits", df)
-        df.to_csv(file_name)
-    return df
+        utils.cache(data, repo.name)
+    return data
 
 
 def analyze(commit_df):
-    plt.scatter(df.commit_date, df.commit_ID, alpha=0.25)
+    plt.scatter(commit_df.commit_date, commit_df.commit_ID, alpha=0.25)
     # [plt.text(x=['commit_date'], y=['commit_ID'], s=['commit_url'])]
 
     plt.xlabel('Commit Date Timeline')
