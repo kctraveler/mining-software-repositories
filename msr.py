@@ -6,7 +6,7 @@ from github import enable_console_debug_logging
 from dotenv import load_dotenv
 from msr_commits import get_commits
 from datetime import datetime
-from msr_issues import get_issues
+import msr_issues
 
 def main():
     # Handle command line arguments
@@ -44,12 +44,12 @@ def main():
         logging.critical("Error returning repository: %s", e)
 
     # WARNING limiting on date range during testing to reduce request count and speed up runs
-    commits = get_commits(repo, lookback_date=datetime(2023,3,1,0,0)) 
-    logging.info("Finished Gathering Commits")
-    logging.debug(commits)
-    issues = get_issues(repo,lookback_date=datetime(2023,3,1,0,0))
+    # commits = get_commits(repo, lookback_date=datetime(2023,3,1,0,0)) 
+    # logging.info("Finished Gathering Commits")
+    # logging.debug(commits)
+    issues = msr_issues.get_issues(repo,lookback_date=datetime(2016,3,1,0,0))
+    msr_issues.analyze_issues(issues)
     # TODO Determine if there is a better way to manage the data coming fromm multiple sources. Potentially look at matplot lib for making visualizations. 
-
 
 if __name__ == '__main__':
     main()
