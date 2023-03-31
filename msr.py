@@ -5,8 +5,11 @@ from github import Github
 from github import enable_console_debug_logging
 from dotenv import load_dotenv
 from msr_commits import get_commits
+from msr_code_size import get_code_size
 from datetime import datetime
+from datetime import date
 import msr_issues
+
 
 def main():
     # Handle command line arguments
@@ -21,6 +24,11 @@ def main():
                         action='store',
                         default='INFO',
                         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'])
+    parser.add_argument("--lookback",
+                        type=lambda d: datetime.strptime(
+                            d, '%Y-%m-%d'),
+                        default="2023-03-01",
+                        help="lookback date to analyze")
     args = parser.parse_args()
 
     # Setup logging
@@ -36,7 +44,8 @@ def main():
         gh = Github(os.environ['GITHUB_TOKEN'], per_page=100)
         repo = gh.get_repo(args.repo)
         logging.info(
-            "API connection established and repo returned with ID %d", repo.id)
+            "API connection established and repo returned with ID Rate limit: %s", repo.id)
+        logging.info("Rate Limit Details: %s", gh.get_rate_limit().core)
     except KeyError as e:
         raise Exception(
             "Github Token not defined in .env or system enviornment variable") from None
@@ -44,12 +53,12 @@ def main():
         logging.critical("Error returning repository: %s", e)
 
     # WARNING limiting on date range during testing to reduce request count and speed up runs
-    # commits = get_commits(repo, lookback_date=datetime(2023,3,1,0,0)) 
-    # logging.info("Finished Gathering Commits")
-    # logging.debug(commits)
-    issues = msr_issues.get_issues(repo,lookback_date=datetime(2016,3,1,0,0))
-    msr_issues.analyze_issues(issues)
-    # TODO Determine if there is a better way to manage the data coming fromm multiple sources. Potentially look at matplot lib for making visualizations. 
+    commits = get_commits(repo, lookback_date=datetime(2023, 3, 1, 0, 0))
+    logging.info("Finished Gathering Commits")
+    logging.debug(commits)
+
+    # TODO Determine if there is a better way to manage the data coming fromm multiple sources. Potentially look at matplot lib for making visualizations.
+
 
 if __name__ == '__main__':
     main()
