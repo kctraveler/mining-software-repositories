@@ -37,4 +37,10 @@ def get_last_entry_dttm(pd_cache: pd.DataFrame, date_index=1):
     pd_cache.sort_values(by=[date_index])
     return pd_cache.max(axis=[1])
     
+def convert_df(list, repo_name, cache=True):
+    df = pd.DataFrame(list)
+    if cache: 
+        file_name = './{name}_commit.csv'.format(name = repo_name)
+        df.to_csv(file_name)
+    return df
     
