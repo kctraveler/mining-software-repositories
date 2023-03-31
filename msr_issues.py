@@ -64,4 +64,4 @@ def analyze(issues: pd.DataFrame):
     plt.xticks(rotation=45, ha='center', ticks=date_range, labels=date_range)
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m-%Y'))
 
-    plt.show()
+    # plt.show()

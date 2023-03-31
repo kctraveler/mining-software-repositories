@@ -8,6 +8,7 @@ from datetime import datetime
 import msr_code_size
 import msr_commits
 import msr_issues
+import matplotlib.pyplot as plt
 
 
 def main():
@@ -65,6 +66,7 @@ def main():
     # Analyze data
     msr_commits.analyze(commits)
     msr_issues.analyze(issues)
+    plt.show()
 
 
 if __name__ == '__main__':

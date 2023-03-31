@@ -61,4 +61,4 @@ def analyze(commit_df):
     plt.xlabel('Commit Date Timeline')
     plt.ylabel('Commit ID')
     plt.title('Commit Timeline')
-    plt.show()
+   # plt.show()
