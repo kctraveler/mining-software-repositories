@@ -8,6 +8,7 @@ from datetime import datetime
 import msr_code_size
 import msr_commits
 import msr_issues
+import msr_issue_density
 import matplotlib.pyplot as plt
 
 
@@ -66,7 +67,14 @@ def main():
     # Analyze data
     msr_commits.analyze(commits)
     msr_issues.analyze(issues)
-    plt.show()
+    msr_issue_density.analyze_issue_density(issues, commits)
+
+    plt.show(block=False)
+    while True:
+        i = input("Press Enter to close all visualizations and exit...")
+        if not i:
+            plt.close('all')
+            break
 
 
 if __name__ == '__main__':
