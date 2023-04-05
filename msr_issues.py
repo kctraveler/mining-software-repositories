@@ -83,4 +83,11 @@ def analyze(issues: pd.DataFrame):
 def analyze_tat(issues: pd.DataFrame):
     # TODO Cacluate time issue was open. Plot against number of comments and num assignees
     # TODO Additionally could plot turn around time by label
-    return
+    issue_tat = issues.query("state == 'closed'").copy(deep=True)
+    issue_tat['created_at'] = pd.to_datetime(issue_tat['created_at']).copy()
+    issue_tat['closed_at'] = pd.to_datetime(issue_tat['closed_at']).copy()
+    issue_tat['time_open'] = (issue_tat['closed_at'] - issue_tat['created_at']).astype('timedelta64[D]')
+    ax = issue_tat.plot(x="comments", y="time_open", marker='o', linestyle='none')
+    ax.set_xlabel("Number of Comments")
+    ax.set_ylabel("Issue TaT (Days)")
+    ax.set_title("Issues/Bugs Turnaround vs Number of Comments")
