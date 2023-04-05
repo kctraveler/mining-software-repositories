@@ -52,7 +52,7 @@ def main():
         gh = Github(os.environ['GITHUB_TOKEN'], per_page=100)
         repo = gh.get_repo(repo_name_full)
         logging.info(
-            "API connection established and repo returned with ID Rate limit: %s", repo.id)
+            "API connection established and repo returned with ID %s", repo.id)
         logging.info("Rate Limit Details: %s", gh.get_rate_limit().core)
     except KeyError as e:
         raise Exception(
@@ -67,6 +67,7 @@ def main():
     # Analyze data
     msr_commits.analyze(commits)
     msr_issues.analyze(issues)
+    msr_issues.analyze_tat(issues)
     msr_issue_density.analyze_issue_density(issues, commits)
     msr_code_size.analyze(commits)
 

@@ -27,7 +27,7 @@ def cache(df: pd.DataFrame, repo_name: str):
 
 def load_cache(repo_name: str, data_type: str, lookback_date: datetime, since_key: str):
     try:
-        logging.info(f"Loading cache for {data_type}")
+        logging.info(f"Loading {data_type} cache")
         cache_file = f'{CACHE_DIR}/{repo_name}/{data_type}.csv'
         df = pd.read_csv(cache_file, index_col=data_type)
         df[since_key] = pd.to_datetime(

@@ -46,7 +46,7 @@ def get_commits(repo, lookback_date: datetime, cache=True, code_size_step_value=
 
     new_data = utils.convert_df(commit_list, "commit")
     if not data.empty:
-        logging.info('data not empty')
+        logging.info('Appending additional data')
         data = pd.concat([data, new_data])
     else:
         data = new_data

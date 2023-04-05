@@ -64,8 +64,6 @@ def analyze(issues: pd.DataFrame):
     ax.set_ylabel("Issue/Bug Count")
     ax.set_xlabel("Created Date")
     plt.xticks(rotation=45)
-    ax.legend(loc=('upper right'))
-    logging.info(ax)
 
     # start_date = issues['created_at'].min().date()
     # end_date = issues['created_at'].max().date()
@@ -90,4 +88,4 @@ def analyze_tat(issues: pd.DataFrame):
     ax = issue_tat.plot(x="comments", y="time_open", marker='o', linestyle='none')
     ax.set_xlabel("Number of Comments")
     ax.set_ylabel("Issue TaT (Days)")
-    ax.set_title("Issues/Bugs Turnaround vs Number of Comments")
+    ax.set_title("Closed Issues/Bugs Turnaround vs Number of Comments")
