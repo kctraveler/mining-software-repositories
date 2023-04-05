@@ -36,6 +36,7 @@ def get_commits(repo, lookback_date: datetime, cache=True, code_size_step_value=
                  "commit_url": commit.html_url,
                  "code_size": None
                  })
+            # Always get code size on first commit in case new commits received < 20
             if len(commit_list) % code_size_step_value == 0 or len(commit_list) == 1:
                 commit_list[-1]["code_size"] = get_code_size(commit)
 
