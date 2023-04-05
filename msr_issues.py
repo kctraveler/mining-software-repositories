@@ -79,8 +79,7 @@ def analyze(issues: pd.DataFrame):
     # plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m-%Y'))
 
 def analyze_tat(issues: pd.DataFrame):
-    # TODO Cacluate time issue was open. Plot against number of comments and num assignees
-    # TODO Additionally could plot turn around time by label
+    # TODO Consider plots with number assignees could do a bar graph by label as well
     issue_tat = issues.query("state == 'closed'").copy(deep=True)
     issue_tat['created_at'] = pd.to_datetime(issue_tat['created_at']).copy()
     issue_tat['closed_at'] = pd.to_datetime(issue_tat['closed_at']).copy()
