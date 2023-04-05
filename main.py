@@ -65,7 +65,7 @@ def main():
     issues = msr_issues.get_issues(repo, lookback_date, ignore_cache)
 
     # Analyze data
-    # msr_commits.analyze(commits)
+    msr_commits.analyze(commits)
     msr_issues.analyze(issues)
     msr_issue_density.analyze_issue_density(issues, commits)
     msr_code_size.analyze(commits)
