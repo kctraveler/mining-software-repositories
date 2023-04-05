@@ -5,6 +5,7 @@ from github import RateLimitExceededException
 import logging
 import utils
 from matplotlib import pyplot as plt
+import matplotlib.dates as mdates
 
 
 def get_commits(repo, lookback_date: datetime, cache=True, code_size_step_value=20):
@@ -53,12 +54,30 @@ def get_commits(repo, lookback_date: datetime, cache=True, code_size_step_value=
     return data
 
 
-def analyze(commit_df):
-    plt.figure(figsize=(10, 5))
-    plt.scatter(commit_df.commit_date, commit_df.commit_ID, alpha=0.25)
-    # [plt.text(x=['commit_date'], y=['commit_ID'], s=['commit_url'])]
+# def analyze(commit_df):
+#     plt.figure(figsize=(10, 5))
+#     plt.scatter(commit_df.commit_date, commit_df.commit_ID, alpha=0.25)
+#     # [plt.text(x=['commit_date'], y=['commit_ID'], s=['commit_url'])]
 
-    plt.xlabel('Commit Date Timeline')
-    plt.ylabel('Commit ID')
-    plt.title('Commit Timeline')
-   # plt.show()
+#     plt.xlabel('Commit Date Timeline')
+#     plt.ylabel('Commit ID')
+#     plt.title('Commit Timeline')
+#    # plt.show()
+
+def analyze(Commit_df: pd.DataFrame):
+    pd.to_datetime(Commit_df['commit_date'])
+
+    start_date = Commit_df['commit_date'].min().date()
+    end_date = Commit_df['commit_date'].max().date()
+    date_range = pd.date_range(start=start_date, end=end_date, freq='y')
+
+    plt.figure(figsize=(10, 5))
+    plt.title('Commits vs Date Range')
+
+    plt.hist(Commit_df['commit_date'], bins=date_range, align="right")
+    # plt.bar(date_range, issues['created_at'], align= "right")
+
+    plt.xticks(rotation=45, ha='center', ticks=date_range, labels=date_range)
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m-%Y'))
+
+    plt.show()
