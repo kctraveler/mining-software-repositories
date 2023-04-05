@@ -32,7 +32,7 @@ def load_cache(repo_name: str, data_type: str, lookback_date: datetime, since_ke
         df = pd.read_csv(cache_file, index_col=data_type)
         df[since_key] = pd.to_datetime(
             df[since_key], infer_datetime_format=True)
-        if df[since_key].min() < lookback_date:
+        if df[since_key].min() > lookback_date:
             logging.info(
                 f'Cache data invalid for given lookback date, ignoring cache')
             return (pd.DataFrame(), lookback_date)

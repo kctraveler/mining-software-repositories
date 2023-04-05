@@ -49,7 +49,7 @@ def get_issues(repo, lookback_date, cache=True):
 
 
 def analyze(issues: pd.DataFrame):
-    pd.to_datetime(issues['created_at'])
+    issues['created_at'] = pd.to_datetime(issues['created_at'])
 
     start_date = issues['created_at'].min().date()
     end_date = issues['created_at'].max().date()

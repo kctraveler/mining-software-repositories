@@ -28,10 +28,10 @@ def main():
     parser.add_argument("--lookback",
                         type=lambda d: datetime.strptime(
                             d, '%Y-%m-%d'),
-                        default="2023-03-01",
+                        default="2000-01-01",
                         help="lookback date to analyze")
     parser.add_argument('--ignoreCache',
-                        action='store_true',  # Change this back later
+                        action='store_false',  # Change this back later
                         help="Ignore the cache and pull fresh data")
     args = parser.parse_args()
 
