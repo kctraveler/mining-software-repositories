@@ -17,8 +17,8 @@ def analyze(commits:pd.DataFrame):
     plt.rcParams["figure.autolayout"] = True
     ax = code_sizes.plot(x="commit_date", y="code_size",
                          marker="o", linestyle='none')
-    ax.set_ylabel("Code Size kb")
-    ax.set_title("Code size over time")
+    ax.set_ylabel("Code Size Bytes")
+    ax.set_title("Code Size (Bytles) Over Time")
 
 
     

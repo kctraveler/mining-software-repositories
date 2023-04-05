@@ -20,7 +20,6 @@ def get_issues(repo, lookback_date, cache=True):
     logging.info("getting %d issues since %s",
                  issues.totalCount, lookback_date)
     issue_list = []
-
     for issue in issues:
         # TODO add checking to update issues already in the cached data
         try:
@@ -80,3 +79,8 @@ def analyze(issues: pd.DataFrame):
 
     # plt.xticks(rotation=45, ha='center', ticks=date_range, labels=date_range)
     # plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m-%Y'))
+
+def analyze_tat(issues: pd.DataFrame):
+    # TODO Cacluate time issue was open. Plot against number of comments and num assignees
+    # TODO Additionally could plot turn around time by label
+    return
