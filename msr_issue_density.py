@@ -30,3 +30,4 @@ def analyze_issue_density(issues: pd.DataFrame, commits: pd.DataFrame):
     h1, l1 = ax.get_legend_handles_labels()
     h2, l2 = ax.right_ax.get_legend_handles_labels()
     ax.legend(h1+h2, l1+l2, bbox_to_anchor=(0.25, -.575))
+    ax.set_title("Issue Density and Code Size Over Time")
