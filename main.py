@@ -31,7 +31,7 @@ def main():
                         default="2023-03-01",
                         help="lookback date to analyze")
     parser.add_argument('--ignoreCache',
-                        action='store_true',  # Change this back later
+                        action='store_false',  # Change this back later
                         help="Ignore the cache and pull fresh data")
     args = parser.parse_args()
 
